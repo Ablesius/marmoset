@@ -1,3 +1,4 @@
+strictness: veryhigh
 test-warnings: true
 ignore-paths:
   - marmoset/virt/
