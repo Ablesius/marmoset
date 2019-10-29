@@ -1,10 +1,10 @@
 """Module to provide a database wrapper for installimage status."""
-from marmoset import config as config_reader
 import sqlite3
+from marmoset import config as config_reader
 
 
-config = config_reader.load_config()
-DB = config['Installstatus'].get('SQLiteDB')
+CONFIG = config_reader.load_config()
+DB = CONFIG['Installstatus'].get('SQLiteDB')
 
 
 class DBHelper:

@@ -34,8 +34,8 @@ class Image:
     def metadata(self):
         metadata = {}
         try:
-            with open(self.metadata_path, "r") as f:
-                parsed_yaml = yaml.load(f)
+            with open(self.metadata_path, "r") as in_file:
+                parsed_yaml = yaml.load(in_file)
         except (yaml.scanner.ScannerError, yaml.YAMLError, OSError, IOError):
             parsed_yaml = {}
         finally:
@@ -71,8 +71,8 @@ class Image:
     def signature(self):
         signature_path = self.image_path + ".sig"
         try:
-            with open(signature_path, "r") as f:
-                signature = f.read()
+            with open(signature_path, "r") as in_file:
+                signature = in_file.read()
         except (IOError, OSError, UnicodeDecodeError):
             signature = None
         return signature

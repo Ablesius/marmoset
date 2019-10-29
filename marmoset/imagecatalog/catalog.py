@@ -1,7 +1,7 @@
 """Module for listing all images."""
-from .image import Image
 import glob
 import os
+from .image import Image
 
 
 class ImageCatalog:

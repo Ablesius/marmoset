@@ -9,7 +9,7 @@ from ldap3 import Server, Connection, ALL, SUBTREE, ALL_ATTRIBUTES, ALL_OPERATIO
 from marmoset import config as config_reader
 from marmoset import validation
 
-config = config_reader.load_config()
+CONFIG = config_reader.load_config()
 
 
 class ISCDhcpLdapConfig:
@@ -26,8 +26,8 @@ class ISCDhcpLdapConfig:
                         get_info=ALL)
 
         conn = Connection(server,
-                          config['DHCPConfig'].get('ldap_bind_dn'),
-                          config['DHCPConfig'].get('ldap_passwort'),
+                          CONFIG['DHCPConfig'].get('ldap_bind_dn'),
+                          CONFIG['DHCPConfig'].get('ldap_passwort'),
                           auto_bind=True)
 
         return conn
@@ -55,7 +55,7 @@ class ISCDhcpLdapConfig:
                                                           self.dhcp_config.dhcp_hostname)
         }
 
-        conn.add("cn=%s,%s" % (self.dhcp_config.ip_address, config['DHCPConfig'].get('ldap_client_base_dn')),
+        conn.add("cn=%s,%s" % (self.dhcp_config.ip_address, CONFIG['DHCPConfig'].get('ldap_client_base_dn')),
                  'dhcpHost',
                  entry_attributes)
 
@@ -65,7 +65,7 @@ class ISCDhcpLdapConfig:
         conn = ISCDhcpLdapConfig.__get_server_connection()
 
         entry_generator = conn.extend.standard.paged_search(
-            search_base=config['DHCPConfig'].get('ldap_client_base_dn'),
+            search_base=CONFIG['DHCPConfig'].get('ldap_client_base_dn'),
             search_filter='(objectClass=dhcpHost)',
             search_scope=SUBTREE,
             attributes=['cn'],
@@ -84,7 +84,7 @@ class ISCDhcpLdapConfig:
         """Get a DN for a certain entry based on the provided ipv4 address."""
         conn = ISCDhcpLdapConfig.__get_server_connection()
         conn.search(
-            search_base=config['DHCPConfig'].get('ldap_client_base_dn'),
+            search_base=CONFIG['DHCPConfig'].get('ldap_client_base_dn'),
             search_filter='(cn=%s)' %
             ip_address,
             search_scope=SUBTREE,
@@ -114,7 +114,7 @@ class ISCDhcpLdapConfig:
         """Get a DN for a certain entry based on the provided MAC address."""
         conn = ISCDhcpLdapConfig.__get_server_connection()
         conn.search(
-            search_base=config['DHCPConfig'].get('ldap_client_base_dn'),
+            search_base=CONFIG['DHCPConfig'].get('ldap_client_base_dn'),
             search_filter='(dhcpHWAddress=ethernet %s)' %
             mac_address,
             search_scope=SUBTREE,
@@ -178,7 +178,7 @@ class ISCDhcpLdapConfig:
 
         dhcp_config = DhcpConfig(mac, ip_address, gateway, networkmask)
 
-        additional_statements = config['DHCPConfig'].get('additional_statements').split(',')
+        additional_statements = CONFIG['DHCPConfig'].get('additional_statements').split(',')
 
         for ldap_additional_statement in entries[
                 0]['attributes']['dhcpStatements']:

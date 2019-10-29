@@ -1,5 +1,5 @@
 from . import config, webserver
 
-config = config.load_config()
+CONFIG = config.load_config()
 
-app = webserver.app(config)
+APP = webserver.app(config)

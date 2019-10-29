@@ -10,6 +10,24 @@ from marmoset import validation
 from .exceptions import Error
 
 
+# pylint: disable=too-many-instance-attributes
+def __expand_template(label, options=None):
+    """Return the config file content expanded with the given values."""
+    if options is not None:
+        options = " ".join(options)
+    else:
+        options = ''
+
+    template = ClientConfig.CFG_TEMPLATE
+    return template.substitute(label=label,
+                               options=options)
+
+
+def __mksalt():
+    """Return a crypt style salt string."""
+    return crypt.mksalt(crypt.METHOD_SHA512)
+
+
 class ClientConfig:
     """Class to handle PXE configs for clients."""
 
@@ -122,6 +140,7 @@ class ClientConfig:
                 option = re.match(r' *APPEND (\w+)', line)
                 if option is not None:
                     return option.group(1)
+        return None
 
     def get_script(self):
         """Parse the script option from the config file."""
@@ -130,6 +149,7 @@ class ClientConfig:
                 option = re.match(r' *APPEND.*script=(\S+)', line)
                 if option is not None:
                     return option.group(1)
+        return None
 
     def get_uuid(self):
         """Parse the uuid option from the config file."""
@@ -138,6 +158,7 @@ class ClientConfig:
                 option = re.match(r' *APPEND.*UUID=(\S+)', line)
                 if option is not None:
                     return option.group(1)
+        return None
 
     def get_ipv6_address(self):
         """Parse the ipv6 address option from the config file."""
@@ -161,6 +182,7 @@ class ClientConfig:
                 option = re.match(r' *APPEND.*%s=(\S+)' % option_string, line)
                 if option is not None:
                     return option.group(1)
+        return None
 
     def create(self, pxe_label):
         """Create the config file for this instance."""
@@ -185,7 +207,7 @@ class ClientConfig:
             options.append("IP6GW=%s" % self.ipv6_gateway)
             options.append("IP6PRE=%s" % self.ipv6_prefix)
 
-        content = self.__expand_template(pxe_label.name, options)
+        content = __expand_template(pxe_label.name, options)
         self.__write_config_file(content)
         self.label = pxe_label.name
 
@@ -243,17 +265,6 @@ class ClientConfig:
                 raise Error(message='couldnt remove immutable flag for {path}'.
                             format(path=path))
 
-    def __expand_template(self, label, options=None):
-        """Return the config file content expanded with the given values."""
-        if options is not None:
-            options = " ".join(options)
-        else:
-            options = ''
-
-        template = ClientConfig.CFG_TEMPLATE
-        return template.substitute(label=label,
-                                   options=options)
-
     def __mkpwhash(self):
         """
         Return the hashed password.
@@ -263,11 +274,7 @@ class ClientConfig:
         if 'password' not in vars(self) or self.password in [None, '']:
             password = base64.b64encode(os.urandom(16), b'-_')[:16]
             self.password = password.decode('utf-8')
-        return crypt.crypt(self.password, self.__mksalt())
-
-    def __mksalt(self):
-        """Return a crypt style salt string."""
-        return crypt.mksalt(crypt.METHOD_SHA512)
+        return crypt.crypt(self.password, __mksalt())
 
     def cb_setpwhash(self):
         """Create a callback that adds a HASH= string to the command line."""

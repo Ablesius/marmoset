@@ -1,9 +1,20 @@
 """Module to handle everything related to installimage status."""
+import datetime
 from marmoset import config as config_reader
 from .db_helper import DBHelper
-import datetime
 
-config = config_reader.load_config()
+CONFIG = config_reader.load_config()
+
+
+def convert_date(date_string):
+    """
+    Convert the date string from database to datetime object.
+
+    :param date_string:
+    :return: datetime
+    """
+    date = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
+    return date
 
 
 class InstallStatus:
@@ -62,8 +73,8 @@ class InstallStatus:
             stats['end_date'] = status_history[-1]['date']
             stats['latest_status_code'] = status_history[-1]['status_code']
             stats['total_steps'] = status_history[-1]['total_steps']
-            datetime_start = self.convert_date(stats['start_date'])
-            datetime_end = self.convert_date(stats['end_date'])
+            datetime_start = convert_date(stats['start_date'])
+            datetime_end = convert_date(stats['end_date'])
             duration = datetime_end - datetime_start
             duration = duration.total_seconds()
             stats['installation_duration'] = int(duration)
@@ -81,13 +92,3 @@ class InstallStatus:
         stats['status_updates'] = history_count
         stats['uuid'] = self.uuid
         return stats
-
-    def convert_date(self, date_string):
-        """
-        Convert the date string from database to datetime object.
-
-        :param date_string:
-        :return: datetime
-        """
-        date = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
-        return date
