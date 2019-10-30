@@ -6,9 +6,9 @@ from marmoset import config as config_reader
 from marmoset import dhcp
 from marmoset import validation
 
-config = config_reader.load_config()
+CONFIG = config_reader.load_config()
 
-additional_statements_str = config['DHCPConfig'].get('additional_statements')
+additional_statements_str = CONFIG['DHCPConfig'].get('additional_statements')
 additional_statements = additional_statements_str.split(',')
 
 parser = reqparse.RequestParser()
@@ -32,7 +32,7 @@ class DhcpCollection(Resource):
         """Create a new PXE record."""
         args = parser.parse_args()
 
-        if ((args.gateway is None and config['DHCPConfig'].getboolean(
+        if ((args.gateway is None and CONFIG['DHCPConfig'].getboolean(
                 'force_gateway')) or args.networkmask is None) and not validation.is_cidr(args.ip_address):
             return {
                 'message': 'missing parameter gateway and networkmask or give an ip address in CIDR notation'}, 406

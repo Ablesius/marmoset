@@ -5,7 +5,7 @@ from flask_restful import Resource, url_for, abort
 from ..installimage.installimage_config import InstallimageConfig
 from ..installimage.req_argument_parser import ReqArgumentParser
 
-parser = ReqArgumentParser()
+PARSER = ReqArgumentParser()
 
 
 class InstallimageCollection(Resource):
@@ -29,7 +29,7 @@ class InstallimageObject(Resource):
 
     def post(self, mac):
         """Create or updates a config based on the provided MAC."""
-        args = parser.parse_args(request)
+        args = PARSER.parse_args(request)
 
         installimage_config = InstallimageConfig(mac)
         installimage_config.clear_variables()

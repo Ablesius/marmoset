@@ -21,8 +21,8 @@ class ISCDhcpLdapConfig:
 
     @staticmethod
     def __get_server_connection():
-        server = Server(config['DHCPConfig'].get('ldap_server'),
-                        port=int(config['DHCPConfig'].get('ldap_port')),
+        server = Server(CONFIG['DHCPConfig'].get('ldap_server'),
+                        port=int(CONFIG['DHCPConfig'].get('ldap_port')),
                         get_info=ALL)
 
         conn = Connection(server,
